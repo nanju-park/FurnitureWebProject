@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:lang="http://www.springframework.org/schema/lang"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:cache="http://www.springframework.org/schema/cache"
+	xmlns:c="http://www.springframework.org/schema/c"
+	xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.1.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
+		http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
+		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.1.xsd
+		http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache-3.1.xsd
+		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+		http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-3.1.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd">
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+	<!-- mybatis 설정 -->
+    
+    <bean id="paymentdao" class="com.funi.dao.PaymentDAO">
+		<property name="sessionTemplate" ref="sqlSession"/>
+	</bean>
+	
+	<bean id="memberdao" class="com.funi.dao.MemberDAO">
+		<property name="sessionTemplate" ref="sqlSession"/>
+	</bean>
+	
+	<bean id="BedDAO" class="com.funi.dao.BedDAO">
+		<property name="sessionTemplate" ref="sqlSession"/>
+	</bean>	
+	
+	<bean id="LivingDAO" class="com.funi.dao.LivingDAO">
+		<property name="sessionTemplate" ref="sqlSession"/>
+	</bean>	
+
+	<bean id="diningdao" class="com.funi.dao.DiningDAO">
+		<property name="sessionTemplate" ref="sqlSession"/>
+	</bean>	
+	
+	<bean id="decodao" class="com.funi.dao.DecoDAO">
+		<property name="sessionTemplate" ref="sqlSession"/>
+	</bean>
+	
+ 	<bean id="cartdao" class="com.funi.dao.CartDAO">
+		<property name="sessionTemplate" ref="sqlSession"/>
+	</bean>
+	
+	<bean class="com.funi.dao.ReviewDAO" id="reviewdao">
+		<property ref="sqlSession" name="sessionTemplate"/>
+	</bean>
+
+	<bean class="com.funi.dao.QnADAO" id="qnadao">
+		<property ref="sqlSession" name="sessionTemplate"/>
+	</bean>
+	
+	<bean class="com.funi.dao.EventDAO" id="eventdao">
+		<property ref="sqlSession" name="sessionTemplate"/>
+	</bean>
+
+	<bean class="com.funi.util.MyUtil1" id="myUtil1"/>
+	
+	
+	<bean id="hikariConfig" class="com.zaxxer.hikari.HikariConfig">
+		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"/>
+		<property name="jdbcUrl" value="jdbc:oracle:thin:@localhost:1521:TestDB"/>
+		<property name="username" value="suzi"/>
+		<property name="password" value="a123"/>
+	</bean>
+	
+   <!-- HikariCP 설정  -->
+	<bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+		<constructor-arg ref="hikariConfig"/>
+	</bean>
+	<!-- SQLSession Factory 설정-->
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate" destroy-method="clearCache">
+		<constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory"/>
+	</bean>
+	<!-- SQLSession Factory 설정-->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"/>
+		<property name="configLocation" value="classpath:/mybatis-config.xml"/>
+ 	</bean>
+ 	<bean id="myUtil" class="com.funi.util.MyUtil"/>
+	<bean id="kakao" class="com.funi.service.KakaoAPI"/>
+    <!-- gmail -->
+    <bean id="mailSender" class ="org.springframework.mail.javamail.JavaMailSenderImpl" >
+        <property name="host" value="smtp.gmail.com" />
+        <property name="port" value="587" />
+        <property name="defaultEncoding" value="utf-8"/>
+        <property name="username" value="tb25271@gmail.com" />
+        <property name="password" value="wns7951355!@" />
+        <property name="javaMailProperties">
+            <props>
+	            <prop key="mail.transport.protocol">smtp</prop>
+	            <prop key="mail.smtp.auth">true</prop>
+	            <prop key="mail.smtp.starttls.enable">true</prop>
+	            <prop key="mail.debug">true</prop>
+            </props>
+        </property>
+    </bean>
+	<bean id="emailService" class="com.funi.service.EmailService">
+		
+	</bean>
+	<context:component-scan base-package="com.exe.exception"/>	
+
+	<context:component-scan base-package="com.exe.util"/>
+</beans>
