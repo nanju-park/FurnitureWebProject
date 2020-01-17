@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-/mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="diningMapper">
+
+<!-- 이미지와 DB등록 -->
+<insert id="insertData" parameterType="com.funi.domain.FurnitureDTO"> 
+	insert into diningroom (imageIndex,productName,cate,cateEn,price,saveFileName) 
+	values (#{imageIndex},#{productName},#{cate},#{cateEn},#{price},#{saveFileName})
+</insert>
+
+<!--
+<select id="maxNum" resultType="int"> 
+select nvl(max(eventIndex),0) from diningroom 
+</select>
+ -->
+ 
+<select id="getDataCount" parameterType="map" resultType="int"> 
+select nvl(count(*),0) from diningroom where productName like '%' || #{searchValue} || '%' or cate like '%' || #{searchValue} || '%'
+</select>
+
+<select id="getCateDataCount" parameterType="map" resultType="int"> 
+select nvl(count(*),0) from diningroom where cateEn=#{cateEn} and productName like '%' || #{searchValue} || '%'
+</select>
+
+ <!-- 전체목록 -->
+<select id="getLists" parameterType="map" resultType="com.funi.domain.FurnitureDTO">
+<![CDATA[ 
+	select * from (select rownum rnum,data.* from (select imageIndex,productName,cate,cateEn,to_char(price, '999,999,999') as price,saveFileName from diningroom 
+	where productName like '%' || #{searchValue} || '%' or cate like '%' || #{searchValue} || '%' order by imageIndex asc) data)
+	where rnum>=#{start} and rnum<=#{end}
+]]>
+</select>
+ 
+ <!-- 카테고리별 목록 -->
+<select id="getCateLists" parameterType="map" resultType="com.funi.domain.FurnitureDTO"> 
+<![CDATA[
+	select * from (select rownum rnum,data.* from (select imageIndex,productName,cate,cateEn,to_char(price, '999,999,999') as price,saveFileName from diningroom 
+	where cateEn=#{cateEn} and productName like '%' || #{searchValue} || '%' order by imageIndex asc) data)
+	where rnum>=#{start} and rnum<=#{end}
+]]>
+</select>
+
+<select id="getDetailLists" parameterType="map" resultType="com.funi.domain.FurnitureDTO">
+	select * from diningroom where cateEn=#{cateEn} order by imageIndex asc
+</select>
+
+<!-- 한개데이터출력 -->
+<select id="getReadData" parameterType="map" resultType="com.funi.domain.FurnitureDTO"> 
+	select IMAGEINDEX,PRODUCTNAME,CATE,CATEEN,to_char(price, '999,999,999') as price,SAVEFILENAME from diningroom where imageIndex=#{imageIndex} and cateEn=#{cateEn}
+</select>
+
+<select id="getReadAllData" parameterType="map" resultType="com.funi.domain.FurnitureDTO">
+	select IMAGEINDEX,PRODUCTNAME,CATE,CATEEN,to_char(price, '999,999,999') as price,SAVEFILENAME from livingroom where imageIndex=#{imageIndex} and cateEn=#{cateEn}
+	union all select IMAGEINDEX,PRODUCTNAME,CATE,CATEEN,to_char(price, '999,999,999') as price,SAVEFILENAME from diningroom where imageIndex=#{imageIndex} and cateEn=#{cateEn}
+	union all select IMAGEINDEX,PRODUCTNAME,CATE,CATEEN,to_char(price, '999,999,999') as price,SAVEFILENAME from bedroom where imageIndex=#{imageIndex} and cateEn=#{cateEn}
+	union all select IMAGEINDEX,PRODUCTNAME,CATE,CATEEN,to_char(price, '999,999,999') as price,SAVEFILENAME from deco where imageIndex=#{imageIndex} and cateEn=#{cateEn}
+</select>
+
+<select id="getAllData" parameterType="map" resultType="com.funi.domain.FurnitureDTO">
+	select IMAGEINDEX,PRODUCTNAME,CATE,CATEEN,to_char(price, '999,999,999') as price,SAVEFILENAME from livingroom
+	union all select IMAGEINDEX,PRODUCTNAME,CATE,CATEEN,to_char(price, '999,999,999') as price,SAVEFILENAME from diningroom
+	union all select IMAGEINDEX,PRODUCTNAME,CATE,CATEEN,to_char(price, '999,999,999') as price,SAVEFILENAME from bedroom
+	union all select IMAGEINDEX,PRODUCTNAME,CATE,CATEEN,to_char(price, '999,999,999') as price,SAVEFILENAME from deco;
+</select>
+
+<!-- 
+<update parameterType="com.exe.dto.EventDTO" id="updateEventData"> 
+update event set eventTitle=#{eventTitle},day=#{day},time=#{time},location=#{location},price=#{price},content1=#{content1},content2=#{content2},savefileName=#{savefileName} 
+where eventIndex=#{eventIndex} 
+</update>
+
+<delete parameterType="int" id="deleteEventData"> 
+delete event where eventIndex=#{eventIndex} 
+</delete>
+ -->
+</mapper>
